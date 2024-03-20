@@ -1,16 +1,8 @@
 import React from "react";
 import Checkbox from "./Checkbox";
+import useCheckboxList, { CheckboxOption } from "./useCheckboxList";
 
-type CountryOption = {
-  label: string;
-  value: string;
-};
-
-type CountryOptionsMap = {
-  [key in CountryOption["value"]]: boolean;
-};
-
-const countryList: CountryOption[] = [
+const countryList: CheckboxOption[] = [
   {
     label: "India",
     value: "IN",
@@ -26,31 +18,7 @@ const countryList: CountryOption[] = [
 ];
 
 function App() {
-  const [selection, setSelection] = React.useState<CountryOptionsMap>({});
-  const isSelectedAll = countryList.length === Object.keys(selection).length;
-
-  const handleSelectAll = () => {
-    const updatedSelection = !isSelectedAll
-      ? countryList.reduce(
-          (prevSelection, country) => ({
-            ...prevSelection,
-            [country.value]: true,
-          }),
-          {},
-        )
-      : {};
-
-    setSelection(updatedSelection);
-  };
-
-  const handleCountryChange = (countryValue: string) => {
-    setSelection(({ [countryValue]: isSelected, ...rest }) => ({
-      // If the country was previously selected, remove it from the selection
-      // otherwise, add it to the selection
-      ...rest,
-      ...(!isSelected ? { [countryValue]: true } : {}),
-    }));
-  };
+  const { selection, isSelectedAll, handleSelectAll, handleOptionChange } = useCheckboxList(countryList);
 
   return (
     <div className="App">
@@ -62,7 +30,7 @@ function App() {
             key={value}
             label={label}
             checked={Boolean(selection[value])}
-            onChange={() => handleCountryChange(value)}
+            onChange={() => handleOptionChange(value)}
           />
           <br key={`br-${value}`} />
         </>
